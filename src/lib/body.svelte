@@ -1,69 +1,35 @@
 <script lang="ts">
+  import { customers } from "$lib/store";
   import Customer from "$lib/customer.svelte";
   import CustomerForm from "$lib/customerForm.svelte";
-  type Customer = {
-    name: string;
-    highlighted: boolean;
-  };
-  let customers: Array<Customer> = [
-    { name: "Joe Smoe", highlighted: false },
-    { name: "Chaim", highlighted: false },
-  ];
+
   let showNew = false;
-  function deleteCustomer(name?: string | undefined) {
-    if (name === undefined) {
-      customers = customers.filter((e, i) => {
-        return i > 0;
-      });
-    }
-    customers = customers.filter((e) => e.name != name);
-  }
-  function addCustomer(name: string | undefined) {
-    if (name === undefined) return;
-    customers = [...customers, { name, highlighted: false }];
-    showNew = false;
-  }
-  function highlightCustomer(name: string) {
-    customers = customers.map((c) =>
-      c.name === name ? { name: c.name, highlighted: !c.highlighted } : c
-    );
-  }
-  $: console.log(customers);
 </script>
 
 <div class="body">
   <p>Currently Serving:</p>
   <div class="customers">
-    {#each customers as customer}
-      <Customer
-        {...customer}
-        deleteCustomer={() => {
-          deleteCustomer(customer.name);
-        }}
-        highlightCustomer={() => {
-          highlightCustomer(customer.name);
-        }}
-      />
+    {#each $customers as customer}
+      <Customer {...customer} />
     {/each}
   </div>
   <div class="btn_container">
     <button
       on:click={() => {
-        deleteCustomer();
+        customers.update((c) => {
+          return c.slice(1);
+        });
       }}
     >
       Done, Next Customer</button
-    ><button
+    >
+    <button
       on:click={() => {
         showNew = !showNew;
       }}>{showNew ? "cancel" : "New Patron"}</button
     >
     {#if showNew}
-      <CustomerForm
-        addCustomer={(name) => {
-          addCustomer(name);
-        }}
-      />
+      <CustomerForm />
     {/if}
   </div>
 </div>

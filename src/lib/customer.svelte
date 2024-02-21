@@ -1,8 +1,7 @@
 <script lang="ts">
+  import { customers } from "$lib/store";
   export let name: string;
   export let highlighted: Boolean;
-  export let deleteCustomer: Function = () => {};
-  export let highlightCustomer: Function = () => {};
 
   let menuOpen: Boolean = false;
 </script>
@@ -18,10 +17,20 @@
 </div>
 {#if menuOpen}
   <div class="menu">
-    <button on:click={highlightCustomer()}
-      >{highlighted ? "unhighlight" : "highlight"}</button
+    <button
+      on:click={() => {
+        customers.update((c) => {
+          return c.map((e) =>
+            e.name === name ? { name, highlighted: !highlighted } : e
+          );
+        });
+      }}>{highlighted ? "unhighlight" : "highlight"}</button
     >
-    <button on:click={deleteCustomer()}>Delete</button>
+    <button
+      on:click={() => {
+        customers.update((c) => c.filter((e) => e.name != name));
+      }}>Delete</button
+    >
   </div>
 {/if}
 

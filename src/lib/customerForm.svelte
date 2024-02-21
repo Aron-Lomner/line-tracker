@@ -1,9 +1,15 @@
 <script lang="ts">
-  export let addCustomer: Function;
-  let name: string | undefined;
+  import { customers } from "$lib/store";
+  let name = "";
 </script>
 
 <div>
   <input type="text" bind:value={name} />
-  <button on:click={addCustomer(name)}>Add</button>
+  <button
+    on:click={() => {
+      if (name === "") return;
+      customers.update((c) => [...c, { name, highlighted: false }]);
+      name = "";
+    }}>Add</button
+  >
 </div>
